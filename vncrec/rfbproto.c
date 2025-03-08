@@ -195,12 +195,16 @@ ConnectToRFBServer(const char *hostname, int port)
   if (appData.play || appData.movie)
     return True;
 
-  if (!StringToIPAddr(hostname, &host)) {
-    fprintf(stderr,"Couldn't convert '%s' to host address\n", hostname);
-    return False;
+  if (port == -1) {
+    // unix socket
+    rfbsock = ConnectToUnixSocket(hostname);
+  } else {
+     if (!StringToIPAddr(hostname, &host)) {
+      fprintf(stderr,"Couldn't convert '%s' to host address\n", hostname);
+      return False;
+    }
+    rfbsock = ConnectToTcpAddr(host, port);
   }
-
-  rfbsock = ConnectToTcpAddr(host, port);
 
   if (rfbsock < 0) {
     fprintf(stderr,"Unable to connect to VNC server\n");

@@ -341,6 +341,7 @@ usage(void)
 	  "\n"
 	  "Usage: %s [<OPTIONS>] [<HOST>][:<DISPLAY#>]\n"
 	  "       %s [<OPTIONS>] [<HOST>][::<PORT#>]\n"
+	  "       %s [<OPTIONS>] unix:[<SOCKET_PATH>]\n"
 	  "       %s [<OPTIONS>] -listen [<DISPLAY#>]\n"
 	  "       %s -help\n"
 	  "\n"
@@ -375,7 +376,7 @@ usage(void)
 	  "\n"
 	  "Option names may be abbreviated, e.g. -bgr instead of -bgr233.\n"
 	  "See the manual page for more information."
-	  "\n", programName, programName, programName, programName);
+	  "\n", programName, programName, programName, programName, programName);
   exit(1);
 }
 
@@ -449,27 +450,35 @@ GetArgsAndResources(int argc, char **argv)
     strcpy(vncServerHost, vncServerName);
     vncServerPort = SERVER_PORT_OFFSET;
   } else {
-    memcpy(vncServerHost, vncServerName, colonPos - vncServerName);
-    vncServerHost[colonPos - vncServerName] = '\0';
-    len = strlen(colonPos + 1);
-    portOffset = SERVER_PORT_OFFSET;
-    if (colonPos[1] == ':') {
-      /* Two colons -- interpret as a port number */
-      colonPos++;
-      len--;
-      portOffset = 0;
+    if (strncmp(vncServerName, "unix:", 5) == 0) {
+      /* unix socket path */
+      vncServerPort = -1;
+      strncpy(vncServerHost, vncServerName + 5, strlen(vncServerName) - 5);
+    } else {
+      memcpy(vncServerHost, vncServerName, colonPos - vncServerName);
+      vncServerHost[colonPos - vncServerName] = '\0';
+      len = strlen(colonPos + 1);
+      portOffset = SERVER_PORT_OFFSET;
+      if (colonPos[1] == ':') {
+        /* Two colons -- interpret as a port number */
+        colonPos++;
+        len--;
+        portOffset = 0;
+      }
+      if (!len || strspn(colonPos + 1, "0123456789") != len) {
+        usage();
+      }
+      disp = atoi(colonPos + 1);
+      if (portOffset != 0 && disp >= 100)
+        portOffset = 0;
+      vncServerPort = disp + portOffset;
+
+      if (vncServerPort < 100) {
+        vncServerPort += SERVER_PORT_OFFSET;
+      }
     }
-    if (!len || strspn(colonPos + 1, "0123456789") != len) {
-      usage();
-    }
-    disp = atoi(colonPos + 1);
-    if (portOffset != 0 && disp >= 100)
-      portOffset = 0;
-    vncServerPort = disp + portOffset;
   }
 
-  if (vncServerPort < 100)
-    vncServerPort += SERVER_PORT_OFFSET;
 
   if ((appData.play ? 1 : 0) + (appData.record ? 1 : 0) + (appData.movie ? 1 : 0) > 1)
     {

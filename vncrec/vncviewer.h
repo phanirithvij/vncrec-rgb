@@ -264,6 +264,7 @@ extern Bool vncLogTimeStamp;
 
 extern Bool ReadFromRFBServer(char *out, unsigned int n);
 extern Bool WriteExact(int sock, char *buf, int n);
+extern int ConnectToUnixSocket(const char *socketPath);
 extern int FindFreeTcpPort(void);
 extern int ListenAtTcpPort(int port);
 extern int ConnectToTcpAddr(unsigned int host, int port);

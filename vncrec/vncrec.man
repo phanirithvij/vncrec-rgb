@@ -24,6 +24,12 @@ vncrec \- an X recorder client for VNC
 .br
 .B vncrec
 .RI [\| options \|]
+.IR \-record
+.RI [\| recordfile \|]
+.RI unix:[\| socket_path \|]
+.br
+.B vncrec
+.RI [\| options \|]
 .IR \-listen
 .RI [\| display \|]
 .br
@@ -86,7 +92,7 @@ before connection, connect to the \fIhost\fR through that tunnel
 (TightVNC\-specific). By default, this option invokes SSH local port
 forwarding, assuming that SSH client binary can be accessed as
 /usr/bin/ssh. Note that when using the \fB\-via\fR option, the host
-machine name should be specified as known to the gateway machine, e.g. 
+machine name should be specified as known to the gateway machine, e.g.
 "localhost" denotes the \fIgateway\fR, not the machine where vncrec
 was launched. See the ENVIRONMENT section below for the information on
 configuring the \fB\-via\fR option.
@@ -176,7 +182,7 @@ suitable for lossy compression, so quality level 0 does not always
 mean unacceptable image quality.
 .TP
 \fB\-nojpeg\fR
-Disable lossy JPEG compression in Tight encoding (TightVNC\-specific). 
+Disable lossy JPEG compression in Tight encoding (TightVNC\-specific).
 Disabling JPEG compression is not a good idea in typical cases, as
 that makes the Tight encoder less efficient. You might want to use
 this option if it's absolutely necessary to achieve perfect image
@@ -186,7 +192,7 @@ quality (see also the \fB\-quality\fR option).
 Disable cursor shape updates, protocol extensions used to handle
 remote cursor movements locally on the client side
 (TightVNC\-specific). Using cursor shape updates decreases delays with
-remote cursor movements, and can improve bandwidth usage dramatically. 
+remote cursor movements, and can improve bandwidth usage dramatically.
 .TP
 \fB\-x11cursor\fR
 Use a real X11 cursor with X-style cursor shape updates, instead of
@@ -199,7 +205,7 @@ Read a plain-text password from stdin. This option affects only the
 standard VNC authentication.
 .SH ENCODINGS
 The server supplies information in whatever format is desired by the
-client, in order to make the client as easy as possible to implement. 
+client, in order to make the client as easy as possible to implement.
 If the client represents itself as able to use multiple formats, the
 server will choose one.
 
@@ -346,7 +352,7 @@ server. Default true.
 .TP
 .B wmDecorationWidth, wmDecorationHeight
 The total width and height taken up by window manager decorations.
-This is used to calculate the maximum size of the VNC viewer window. 
+This is used to calculate the maximum size of the VNC viewer window.
 Default is width 4, height 24.
 .TP
 .B bumpScrollTime, bumpScrollPixels
@@ -354,7 +360,7 @@ When in full screen mode and the VNC desktop is bigger than the X
 display, scrolling happens whenever the mouse hits the edge of the
 screen. The maximum speed of scrolling is bumpScrollPixels pixels
 every bumpScrollTime milliseconds. The actual speed of scrolling will
-be slower than this, of course, depending on how fast your machine is. 
+be slower than this, of course, depending on how fast your machine is.
 Default 20 pixels every 25 milliseconds.
 .TP
 .B popupButtonCount

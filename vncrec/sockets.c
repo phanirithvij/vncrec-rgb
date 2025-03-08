@@ -29,6 +29,7 @@
 
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -620,6 +621,46 @@ WriteExact(int sock, char *buf, int n)
   return True;
 }
 
+/*
+ * ConnectToUnixSocket connects to the given Unix domain socket path.
+ */
+int
+ConnectToUnixSocket(const char *socketPath)
+{
+  int sock;
+  struct sockaddr_un addr;
+
+  /* Create socket */
+  sock = socket(AF_UNIX, SOCK_STREAM, 0);
+  if (sock < 0) {
+    fprintf(stderr, programName);
+    perror(": ConnectToUnixSocket: socket");
+    return -1;
+  }
+
+  /* Prepare address structure */
+  memset(&addr, 0, sizeof(addr));
+  addr.sun_family = AF_UNIX;
+
+  /* Check path length to avoid buffer overflow */
+  if (strlen(socketPath) >= sizeof(addr.sun_path)) {
+    fprintf(stderr, "%s: ConnectToUnixSocket: Path too long\n", programName);
+    close(sock);
+    return -1;
+  }
+
+  strncpy(addr.sun_path, socketPath, sizeof(addr.sun_path) - 1);
+
+  /* Connect to the socket */
+  if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+    fprintf(stderr, programName);
+    perror(": ConnectToUnixSocket: connect");
+    close(sock);
+    return -1;
+  }
+
+  return sock;
+}
 
 /*
  * ConnectToTcpAddr connects to the given TCP port.
