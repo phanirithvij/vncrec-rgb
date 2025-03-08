@@ -146,6 +146,7 @@ extern void SetVisualAndCmap();
 
 /* cursor.c */
 
+extern Bool HandleCursorPos(int x, int y);
 extern Bool HandleCursorShape(int xhot, int yhot, int width, int height,
                               CARD32 enc);
 extern void SoftCursorLockArea(int x, int y, int w, int h);
